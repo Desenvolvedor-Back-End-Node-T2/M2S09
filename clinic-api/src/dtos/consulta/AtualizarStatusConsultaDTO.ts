@@ -2,7 +2,7 @@ import {IsEnum} from 'class-validator'
 import {ConsultaStatus} from '../../entities/Consulta'
 
 /**
- * @penapi
+ * @openapi
  * components:
  *  schemas:
  *    AtualizarStatusConsultaDTO:
