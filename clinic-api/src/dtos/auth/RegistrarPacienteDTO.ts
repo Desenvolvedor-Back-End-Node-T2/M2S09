@@ -26,5 +26,5 @@ export class RegistrarPacienteDTO {
 
     @IsOptional()
     @IsDateString({}, {message: "A data de nascimento deve ser uma data válida"})
-    dataNascimento!: string
+    dataNascimento?: string
 }
