@@ -1,9 +1,10 @@
-import { Router } from "express"
+import { NextFunction, Router } from "express"
 import { AuthController } from "../controllers/AuthController"
 import { RegistrarPacienteDTO } from "../dtos/auth/RegistrarPacienteDTO";
 import { validateDTO } from "../middleware/validate";
 import { LoginDTO } from "../dtos/auth/LoginDTO";
 import { RegistrarMedicoDTO } from "../dtos/auth/RegistrarMedicoDTO";
+import asyncHandler from "express-async-handler"
 
 const authRoutes = Router()
 const authController = new AuthController()
@@ -31,7 +32,7 @@ const authController = new AuthController()
 authRoutes.post(
     "/register/paciente",
     validateDTO(RegistrarPacienteDTO),
-    (req, res) => authController.registrarPaciente(req, res))
+    asyncHandler(async (req, res) => { await authController.registrarPaciente(req, res) }))
 
 /**
  * @openapi
@@ -56,7 +57,7 @@ authRoutes.post(
  */
 authRoutes.post("/register/medico",
     validateDTO(RegistrarMedicoDTO),
-    (req, res) => authController.registrarMedico(req, res))
+    asyncHandler(async (req, res) => { await authController.registrarMedico(req, res) }))
 
 /**
  * @openapi
@@ -77,6 +78,6 @@ authRoutes.post("/register/medico",
  */
 authRoutes.post("/login",
     validateDTO(LoginDTO),
-    (req, res) => authController.login(req, res))
+    asyncHandler(async (req, res) => { await authController.login(req, res) }))
 
 export { authRoutes }
