@@ -1,130 +1,35 @@
-import { AppDataSource } from "../data-source";
-import { Medico } from "../entities/Medico";
-import { Paciente } from "../entities/Paciente";
-import { Usuario, UsuarioRole } from "../entities/Usuario";
 import {Request, Response} from "express"
 import bcrypt from "bcryptjs"
 import { gerarToken } from "../utils/jwt";
+import { AuthService } from "../service/AuthService";
+import { TypeOrmUsuarioRepository } from "../repositories/typeorm/TypeOrmUsuarioRepository";
+import { TypeOrmPacienteRepository } from "../repositories/typeorm/TypeOrmPacienteRepository";
+import { TypeOrmMedicoRepository } from "../repositories/typeorm/TypeOrmMedicoRepository";
 
-
-
-
-const usuarioRepository = AppDataSource.getRepository(Usuario)
-const pacienteRepository = AppDataSource.getRepository(Paciente)
-const medicoRepository = AppDataSource.getRepository(Medico)
+const authService = new AuthService(
+    new TypeOrmUsuarioRepository(),
+    new TypeOrmPacienteRepository(),
+    new TypeOrmMedicoRepository()
+)
 
 export class AuthController{
     //POST /auth/register/paciente
-
-    async registrarPaciente(req: Request, res: Response){
-        const { nome, email, senha, dataNascimento } = req.body
-
-        if(!nome || !email || !senha){
-            return res.status(400).json({erro: "nome, email e senha são obrigatórios."})
-        }
-
-        const emailExiste = await usuarioRepository.findOneBy({email})
-        if(emailExiste){
-            return res.status(400).json({erro: "E-mail já cadastrado"})
-        }
-
-        const senhaHash = await bcrypt.hash(senha, 10)
-
-        const usuario = usuarioRepository.create({
-            nome,
-            email,
-            senha: senhaHash,
-            role: UsuarioRole.PACIENTE
-        })
-
-        await usuarioRepository.save(usuario)
-
-        const paciente = pacienteRepository.create({
-            usuario,
-            dataNascimento
-        })
-
-        await pacienteRepository.save(paciente)
-
-        return res.status(201).json({
-            id: paciente.id,
-            nome: usuario.nome,
-            email: usuario.email,
-            role: usuario.role
-        })
+    async registrarPaciente(req: Request, res: Response): Promise<Response>{
+        const resultado = await authService.registrarPaciente(req.body)
+        return res.status(201).json(resultado)
     }
 
     // POST /auth/register/medico
-    async registrarMedico(req: Request, res: Response){
-        const { nome, email, senha, crm, especialidade } = req.body
-
-         if(!nome || !email || !senha || !crm || !especialidade){
-            return res.status(400).json({erro: "nome, email, senha, crm e especialidade são obrigatórios."})
-        }
-
-        const emailExiste = await usuarioRepository.findOneBy({email})
-        if(emailExiste){
-            return res.status(400).json({erro: "E-mail já cadastrado"})
-        }
-
-        const senhaHash = await bcrypt.hash(senha, 10)
-
-        const usuario = usuarioRepository.create({
-            nome,
-            email,
-            senha: senhaHash,
-            role: UsuarioRole.MEDICO
-        })
-
-        await usuarioRepository.save(usuario)
-
-        const medico = medicoRepository.create({
-            usuario,
-            crm,
-            especialidade
-        })
-
-        await medicoRepository.save(medico)
-
-        return res.status(201).json({
-            id: medico.id,
-            nome: usuario.nome,
-            email: usuario.email,
-            role: usuario.role,
-            crm: medico.crm,
-            especialidade: medico.especialidade
-        })
+    async registrarMedico(req: Request, res: Response): Promise<Response>{
+        const resultado = await authService.registrarMedico(req.body)
+        return res.status(201).json(resultado)
     }
 
     //POST /auth/login
-    async login(req: Request, res: Response){
-        const { email, senha } = req.body
-
-        if(!email || !senha){
-            return res.status(400).json({erro: "email, senha são obrigatórios."})
-        }
-
-        const usuario = await usuarioRepository.findOneBy({email})
-        if(!usuario){
-            return res.status(401).json({erro: "Credenciais Inválidas"})
-        }
-
-        const senhaCorreta = await bcrypt.compare(senha, usuario.senha)
-        if(!senhaCorreta){
-            return res.status(401).json({erro: "Credenciais Inválidas"})
-        }
-
-        const token = gerarToken({sub: usuario.id, role: usuario.role})
-
-        return res.json({
-            token,
-            usuario: {
-                id: usuario.id,
-                nome: usuario.nome,
-                email: usuario.email,
-                role: usuario.role
-            }
-        })
+    async login(req: Request, res: Response): Promise<Response>{
+       const { email, senha } = req.body
+       const resultado = await authService.login(email, senha)
+       return res.json(resultado)
     }
 
 }
