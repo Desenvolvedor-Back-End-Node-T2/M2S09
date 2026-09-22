@@ -1,34 +1,18 @@
-import {Request, Response} from "express"
-import { AppDataSource } from "../data-source";
-import { Paciente } from "../entities/Paciente"
-import {UsuarioResponseDTO} from "../dtos/usuario/UsuarioResponseDTO";
+// src/controllers/PacienteController.ts
+import { Request, Response } from 'express';
+import { TypeOrmPacienteRepository } from '../repositories/typeorm/TypeOrmPacienteRepository';
+import { PacienteService } from '../service/PacienteService';
 
-const pacienteRepository = AppDataSource.getRepository(Paciente)
+const pacienteService = new PacienteService(new TypeOrmPacienteRepository());
 
-export class PacienteController{
-    // GET /paciente/me
-    async meuPerfil(req: Request, res: Response){
-        const paciente = await pacienteRepository.findOne({
-            where: {usuario: {id: req.usuario?.sub}}
-        })
+export class PacienteController {
+  async meuPerfil(req: Request, res: Response) {
+    const paciente = await pacienteService.buscarMeuPerfil(req.usuario!.sub);
+    return res.json(paciente);
+  }
 
-        if(!paciente){
-            return res.status(404).json({erro: "Paciente não encontrado"})
-        }
-
-        res.json(paciente)
-    }
-
-    //GET /pacientes
-    async listar(req: Request, res: Response){
-        const pacientes = await pacienteRepository.find()
-
-        const resposta = pacientes.map(p => ({
-            id: p.id,
-            dataNascimento: p.dataNascimento,
-            usuario: new UsuarioResponseDTO(p.usuario)
-        }))
-
-        return res.json(resposta)
-    }
+  async listar(req: Request, res: Response) {
+    const pacientes = await pacienteService.listarTodos();
+    return res.json(pacientes);
+  }
 }
