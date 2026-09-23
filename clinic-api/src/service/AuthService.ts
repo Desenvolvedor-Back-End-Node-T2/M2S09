@@ -8,6 +8,7 @@ import { UsuarioRole } from "../entities/Usuario";
 import { UsuarioResponseDTO } from "../dtos/usuario/UsuarioResponseDTO";
 import { RegistrarMedicoDTO } from "../dtos/auth/RegistrarMedicoDTO";
 import { gerarToken } from "../utils/jwt";
+import { logger } from "../config/logger";
 
 export class AuthService{
     constructor(
@@ -54,6 +55,8 @@ export class AuthService{
             throw new AppError('E-mail já cadastrado')
         }
 
+        // ! [bug-fix]: implementar validação de crm UNIQUE
+
         const hashSenha = await bcrypt.hash(senha, 10)
         const usuario = this.usuarioRepository.criar({
             nome, email, senha: hashSenha, role: UsuarioRole.MEDICO
@@ -74,14 +77,17 @@ export class AuthService{
         const usuario = await this.usuarioRepository.buscarPorEmail(email)
         if(!usuario){
             throw new AppError('Credenciais Inválidas', 401)
+            logger.warn(`Tentativa de login falhou para ${email}`)
         }
 
         const senhaCorreta = await bcrypt.compare(senha, usuario.senha)
         if (!senhaCorreta){
             throw new AppError('Credenciais Inválidas', 401)
+            logger.warn(`Tentativa de login falhou para ${email}`)
         }
 
         const token = gerarToken({sub: usuario.id, role: usuario.role})
+        logger.info(`Login bem-sucedido: usuario ${usuario.id} (${usuario.role})`)
 
         return {
             token,
