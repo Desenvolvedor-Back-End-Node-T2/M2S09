@@ -6,6 +6,7 @@ import { UsuarioRole } from "../entities/Usuario"
 import { validateDTO } from '../middleware/validate';
 import { AgendarConsultaDTO } from '../dtos/consulta/AgendarConsultaDTO';
 import { AtualizarStatusConsultaDTO } from '../dtos/consulta/AtualizarStatusConsultaDTO';
+import asyncHandler from "express-async-handler"
 
 const consultaRoutes = Router()
 const consultaController = new ConsultaController()
@@ -35,7 +36,7 @@ consultaRoutes.post(
     "/",
     roleMiddleware(UsuarioRole.PACIENTE),
     validateDTO(AgendarConsultaDTO),
-    (req, res) => consultaController.agendar(req, res)
+    asyncHandler( async (req, res) => { await consultaController.agendar(req, res) })
 )
 
 // PACIENTE, MEDICO e ADMIN podem listar — cada um vê seu recorte
@@ -47,15 +48,15 @@ consultaRoutes.post(
  *    tags: [Consultas]
  *    security:
  *      - bearerAuth: []
- *   responses:
- *    '200': { description: Lista de consultas }
- *    '403': { description: "Papel não autorizado" }
+ *    responses:
+ *      '200': { description: Lista de consultas }
+ *      '403': { description: "Papel não autorizado" }
  *
  */
 consultaRoutes.get(
   "/",
   roleMiddleware(UsuarioRole.PACIENTE, UsuarioRole.MEDICO, UsuarioRole.ADMIN),
-  (req, res) => consultaController.listar(req, res)
+  asyncHandler( async (req, res) => { await consultaController.listar(req, res) })
 );
 
 // Só o MEDICO altera o status (realizar/cancelar) de uma consulta
@@ -86,7 +87,7 @@ consultaRoutes.patch(
   "/:id/status",
   roleMiddleware(UsuarioRole.MEDICO),
   validateDTO(AtualizarStatusConsultaDTO),
-  (req, res) => consultaController.atualizarStatus(req, res)
+  asyncHandler( async (req, res) => { await consultaController.atualizarStatus(req, res) })
 );
 
 export { consultaRoutes }

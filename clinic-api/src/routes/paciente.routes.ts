@@ -3,6 +3,7 @@ import { PacienteController } from "../controllers/PacienteController"
 import { authMiddleware} from "../middleware/authMiddleware"
 import { roleMiddleware} from "../middleware/roleMiddleware"
 import { UsuarioRole } from "../entities/Usuario"
+import asyncHandler from "express-async-handler"
 
 const pacienteRoutes = Router()
 const pacienteController = new PacienteController()
@@ -25,7 +26,7 @@ pacienteRoutes.use(authMiddleware)
 pacienteRoutes.get(
     "/me",
     roleMiddleware(UsuarioRole.PACIENTE),
-    (req, res) => pacienteController.meuPerfil(req, res))
+    asyncHandler(async (req, res) => { await pacienteController.meuPerfil(req, res) }))
 
 /**
  * @openapi
@@ -54,7 +55,7 @@ pacienteRoutes.get(
 pacienteRoutes.get(
     "/",
     roleMiddleware(UsuarioRole.MEDICO, UsuarioRole.ADMIN),
-    (req, res) => pacienteController.listar(req, res))
+    asyncHandler(async (req, res) => { await pacienteController.listar(req, res)} ))
 
 export { pacienteRoutes }
 

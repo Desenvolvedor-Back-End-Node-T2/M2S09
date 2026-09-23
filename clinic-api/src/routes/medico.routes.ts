@@ -3,6 +3,7 @@ import { MedicoController} from "../controllers/MedicoController"
 import { authMiddleware} from "../middleware/authMiddleware"
 import { roleMiddleware} from "../middleware/roleMiddleware"
 import { UsuarioRole } from "../entities/Usuario"
+import asyncHandler from "express-async-handler"
 
 const medicoRoutes = Router()
 const medicoController = new MedicoController()
@@ -27,7 +28,7 @@ const medicoController = new MedicoController()
  *                   email: { type: string, format: email, example: "joao.silva@email.com" }
  *                   especialidade: { type: string, example: "Cardiologia" }
  */
-medicoRoutes.get("/", (req, res) => medicoController.listar(req, res))
+medicoRoutes.get("/", asyncHandler( async (req, res) => { await medicoController.listar(req, res) }))
 
 /**
  * @openapi
@@ -49,7 +50,7 @@ medicoRoutes.get(
     "/me",
     authMiddleware,
     roleMiddleware(UsuarioRole.MEDICO),
-    (req, res) => medicoController.meuPerfil(req, res)
+    asyncHandler( async (req, res) => { await medicoController.meuPerfil(req, res) })
 )
 
 export { medicoRoutes }
