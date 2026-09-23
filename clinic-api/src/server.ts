@@ -7,11 +7,14 @@ import { routes } from './routes';
 import { swaggerSpec } from './config/swagger';
 import swaggerUi from 'swagger-ui-express'
 import { errorHandler } from './middleware/errorHandler';
+import { requestLogger } from './middleware/requestLogger';
+import { logger } from './config/logger';
 
 
 const app = express()
 app.use(cors())
 app.use(express.json())
+app.use(requestLogger)
 app.use(routes)
 app.use(errorHandler);
 
@@ -21,10 +24,10 @@ const PORT = process.env.PORT || 3333
 
 AppDataSource.initialize()
 .then(() => {
-    console.log("Conexão com o banco de dados (Aiven Server) estabelecida.")
+    logger.info("Conexão com o banco de dados (Aiven Server) estabelecida.")
     app.listen(PORT, () => {
-        console.log(`Servidor rodando em http://localhost:${PORT}`)
+        logger.info(`Servidor rodando em http://localhost:${PORT}`)
     })
 }).catch((err) => {
-    console.log("Erro ao conectar com o banco de dados: ", err)
+    logger.error("Erro ao conectar com o banco de dados: ", err)
 })
