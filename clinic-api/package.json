@@ -4,6 +4,8 @@
   "description": "Mini projeto de aula: JWT + Node + TypeScript + Express + TypeORM + Postgres (Aiven)",
   "main": "dist/server.js",
   "scripts": {
+    "test": "jest",
+    "test:watch": "jest --watch",
     "dev": "ts-node-dev --respawn --transpile-only src/server.ts",
     "build": "tsc",
     "start": "node dist/server.js",
@@ -33,10 +35,13 @@
     "@types/bcryptjs": "^2.4.6",
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.6",
+    "@types/jest": "^30.0.0",
     "@types/jsonwebtoken": "^9.0.10",
     "@types/node": "^24.0.0",
     "@types/swagger-jsdoc": "^6.0.4",
     "@types/swagger-ui-express": "^4.1.8",
+    "jest": "^30.5.2",
+    "ts-jest": "^29.4.13",
     "ts-node": "^10.9.2",
     "ts-node-dev": "^2.0.0",
     "typescript": "^6.0.0"
