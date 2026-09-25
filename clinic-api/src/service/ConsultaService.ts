@@ -5,6 +5,7 @@ import { IConsultaRepository } from '../repositories/interfaces/IConsultaReposit
 import { IMedicoRepository } from '../repositories/interfaces/IMedicoRepository';
 import { IPacienteRepository } from '../repositories/interfaces/IPacienteRepository';
 import { AgendarConsultaDTO } from '../dtos/consulta/AgendarConsultaDTO';
+import { logger } from '../config/logger';
 
 export class ConsultaService {
   constructor(
@@ -65,10 +66,17 @@ export class ConsultaService {
 
     const medico = await this.medicoRepository.buscarPorUsuarioId(usuarioId);
     if (!medico || consulta.medico.id !== medico.id) {
+      logger.error(`${usuarioId} não autorizado a consulta: ${consultaId}`)
       throw new AppError('Você só pode alterar consultas atribuídas a você.', 403);
     }
 
     consulta.status = novoStatus;
+
+    if(novoStatus == ConsultaStatus.CANCELADA){
+      logger.info(`Consulta CANCELADA: ${consultaId} - ID (${usuarioId})`)
+    }
+
+    logger.info(`Status da consulta alterado: ${consulta.id} - (${consulta.status})`)
     return this.consultaRepository.salvar(consulta);
   }
 }

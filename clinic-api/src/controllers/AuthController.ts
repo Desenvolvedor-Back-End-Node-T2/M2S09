@@ -1,6 +1,4 @@
 import {Request, Response} from "express"
-import bcrypt from "bcryptjs"
-import { gerarToken } from "../utils/jwt";
 import { AuthService } from "../service/AuthService";
 import { TypeOrmUsuarioRepository } from "../repositories/typeorm/TypeOrmUsuarioRepository";
 import { TypeOrmPacienteRepository } from "../repositories/typeorm/TypeOrmPacienteRepository";

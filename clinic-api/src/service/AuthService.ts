@@ -27,6 +27,7 @@ export class AuthService{
 
         const emailExiste = await this.usuarioRepository.buscarPorEmail(email)
         if(emailExiste){
+            logger.error(`Conflito de e-mail: ${email}`)
             throw new AppError('E-mail já cadastrado')
         }
 
@@ -39,6 +40,7 @@ export class AuthService{
         const paciente = this.pacienteRepository.criar({usuario, dataNascimento})
         await this.pacienteRepository.salvar(paciente)
 
+        logger.info(`Paciente cadastrado com sucesso: (${paciente.id}, ${email}})`)
         return new UsuarioResponseDTO(usuario)
 
     }
@@ -52,6 +54,7 @@ export class AuthService{
 
         const emailExiste = await this.usuarioRepository.buscarPorEmail(email)
         if(emailExiste){
+            logger.error(`Conflito de e-mail: ${email}`)
             throw new AppError('E-mail já cadastrado')
         }
 
@@ -66,6 +69,7 @@ export class AuthService{
         const medico = this.medicoRepository.criar({usuario, crm, especialidade})
         await this.medicoRepository.salvar(medico)
 
+        logger.info(`Médico cadastrado com sucesso: (${medico.id}, ${email}, ${medico.crm})`)
         return new UsuarioResponseDTO(usuario)
     }
 
