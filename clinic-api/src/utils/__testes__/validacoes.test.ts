@@ -1,4 +1,4 @@
-import { calcularIdade, emailValido, validarCrm } from '../validacoes'
+import { buscarSaudacao, calcularIdade, emailValido, validarCrm } from '../validacoes'
 import { describe, it, expect} from '@jest/globals'
 
 
@@ -35,5 +35,12 @@ describe('validarCrm', () => {
 
     it('lança erro quando o CRM está vazio', () => {
         expect( () => validarCrm('')).toThrow('CRM não pode ser vazio')
+    })
+})
+
+describe('buscarSaudacao', () => {
+    it('resolve com a saudacao correta', async () => {
+        const resultado = await buscarSaudacao('Robson')
+        expect(resultado).toBe('Olá, Robson!')
     })
 })
