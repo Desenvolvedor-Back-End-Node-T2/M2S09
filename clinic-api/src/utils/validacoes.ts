@@ -14,3 +14,9 @@ export function calcularIdade(dataNascimento: string): number{
 export function emailValido(email: string): boolean{
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
 }
+
+export function validarCrm(crm: string): void {
+    if(!crm || crm.trim().length === 0){
+        throw new Error('CRM não pode ser vazio')
+    }
+}
