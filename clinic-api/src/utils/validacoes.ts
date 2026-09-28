@@ -20,3 +20,10 @@ export function validarCrm(crm: string): void {
         throw new Error('CRM não pode ser vazio')
     }
 }
+
+//exemplo de função assíncrono
+export async function buscarSaudacao(nome: string): Promise<string> {
+    return new Promise((resolve) => {
+        setTimeout(() => resolve(`Olá, ${nome}!`), 10)
+    })
+}
