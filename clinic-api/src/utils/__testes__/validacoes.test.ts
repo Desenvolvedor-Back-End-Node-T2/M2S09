@@ -1,4 +1,4 @@
-import { calcularIdade, emailValido } from '../validacoes'
+import { calcularIdade, emailValido, validarCrm } from '../validacoes'
 import { describe, it, expect} from '@jest/globals'
 
 
@@ -23,7 +23,17 @@ describe('emailValido', () => {
         expect(emailValido('ana.email.com')).toBe(false)
     })
 
-     it('retorna false para uma string vazia', () => {
+    it('retorna false para uma string vazia', () => {
         expect(emailValido('')).toBe(false)
+    })
+})
+
+describe('validarCrm', () => {
+    it('não lança erro para um CRM válido', () => {
+        expect(() => validarCrm('12345-SP')).not.toThrow()
+    })
+
+    it('lança erro quando o CRM está vazio', () => {
+        expect( () => validarCrm('')).toThrow('CRM não pode ser vazio')
     })
 })
