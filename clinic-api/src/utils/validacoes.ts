@@ -27,3 +27,15 @@ export async function buscarSaudacao(nome: string): Promise<string> {
         setTimeout(() => resolve(`Olá, ${nome}!`), 10)
     })
 }
+
+export function podeAgendarConsulta(dataHora: Date): boolean{
+    return dataHora.getTime() > Date.now()
+}
+
+export function validarSenha(senha: string): boolean{
+    if (!senha || senha.length < 6){
+        return false
+    }
+
+    return true
+}
