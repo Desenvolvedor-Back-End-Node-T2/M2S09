@@ -1,4 +1,4 @@
-import { buscarSaudacao, calcularIdade, emailValido, validarCrm } from '../validacoes'
+import { buscarSaudacao, calcularIdade, emailValido, podeAgendarConsulta, validarCrm, validarSenha } from '../validacoes'
 import { describe, it, expect} from '@jest/globals'
 
 
@@ -11,6 +11,12 @@ describe('calcularidade', () => {
         const idade = calcularIdade(dataNascimento)
 
         expect(idade).toBe(30)
+    })
+
+    it('retorna 0 para alguém nascido hoje', () => {
+        const hoje = new Date()
+        const dataNascimentoStr = hoje.toISOString().split('T')[0]
+        expect(calcularIdade(dataNascimentoStr)).toBe(0)
     })
 })
 
@@ -25,6 +31,10 @@ describe('emailValido', () => {
 
     it('retorna false para uma string vazia', () => {
         expect(emailValido('')).toBe(false)
+    })
+
+    it('rejeita e-mail sem domínio (ex: ana@)', () => {
+        expect(emailValido('ana@')).toBe(false)
     })
 })
 
@@ -42,5 +52,35 @@ describe('buscarSaudacao', () => {
     it('resolve com a saudacao correta', async () => {
         const resultado = await buscarSaudacao('Robson')
         expect(resultado).toBe('Olá, Robson!')
+    })
+})
+
+describe('podeAgendarConsulta', () => {
+    it('retorna true para uma data no futuro', () => {
+        const amanha = new Date(Date.now() + 24 * 60 * 60 * 1000)
+        expect(podeAgendarConsulta(amanha)).toBeTruthy()
+    })
+
+    it('retorna false para uma data no passado', () => {
+        const ontem = new Date(Date.now() - 24 * 60 * 60 * 1000)
+        expect(podeAgendarConsulta(ontem)).toBeFalsy()
+    })
+})
+
+describe('validarSenha', () => {
+    it('aceita senha com 6 ou mais caracteres', () => {
+        expect(validarSenha('123456')).toBe(true)
+    })
+
+    it('aceita senha com mais de 6 caracteres', () => {
+        expect(validarSenha('senhaDeMais6Caracteres')).toBe(true)
+    })
+
+    it('refeita senha com menos de 6 caracteres', () => {
+        expect(validarSenha('123')).toBe(false)
+    })
+
+    it('rejeita senha vazia', () => {
+        expect(validarSenha('')).toBe(false)
     })
 })
