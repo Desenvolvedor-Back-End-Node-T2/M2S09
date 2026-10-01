@@ -49,7 +49,6 @@ describe('AuthService', () => {
     })
 
     // !verificar função gerarToken à partir do caso de teste
-    /*
     it('deve autenticar com credencias válidas', async () => {
         await authService.registrarPaciente({
             nome: 'Davi Saldanha',
@@ -61,7 +60,7 @@ describe('AuthService', () => {
 
         expect(resultado.token).toBeDefined();
         expect(resultado.usuario.email).toBe('davi@email.com')
-    })*/
+    })
 
     it('não deve autenticar com senha incorreta', async() => {
         await authService.registrarPaciente({
