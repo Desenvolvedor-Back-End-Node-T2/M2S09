@@ -80,14 +80,14 @@ export class AuthService{
 
         const usuario = await this.usuarioRepository.buscarPorEmail(email)
         if(!usuario){
-            throw new AppError('Credenciais Inválidas', 401)
             logger.warn(`Tentativa de login falhou para ${email}`)
+            throw new AppError('Credenciais Inválidas', 401)
         }
 
         const senhaCorreta = await bcrypt.compare(senha, usuario.senha)
         if (!senhaCorreta){
-            throw new AppError('Credenciais Inválidas', 401)
             logger.warn(`Tentativa de login falhou para ${email}`)
+            throw new AppError('Credenciais Inválidas', 401)
         }
 
         const token = gerarToken({sub: usuario.id, role: usuario.role})
