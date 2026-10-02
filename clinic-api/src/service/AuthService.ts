@@ -64,6 +64,11 @@ export class AuthService{
         const usuario = this.usuarioRepository.criar({
             nome, email, senha: hashSenha, role: UsuarioRole.MEDICO
         })
+        
+        if(!usuario){
+            throw new AppError('Erro ao criar usuário')
+        }
+
         await this.usuarioRepository.salvar(usuario)
 
         const medico = this.medicoRepository.criar({usuario, crm, especialidade})
