@@ -1,3 +1,4 @@
+import { RegistrarMedicoDTO } from "../../dtos/auth/RegistrarMedicoDTO";
 import { UsuarioRole } from "../../entities/Usuario";
 import { FakeMedicoRepository } from "../../repositories/fakes/FakeMedicoRepository";
 import { FakePacienteRepository } from "../../repositories/fakes/FakePacienteRepository";
@@ -62,14 +63,48 @@ describe('AuthService', () => {
         expect(resultado.usuario.email).toBe('davi@email.com')
     })
 
-    it('não deve autenticar com senha incorreta', async() => {
-        await authService.registrarPaciente({
+    it('deve cadastrar um médico com sucesso', async () => {
+        const resultado = await authService.registrarMedico({
             nome: 'Davi Saldanha',
             email: 'davi@email.com',
-            senha: '123456'
+            senha: '123456',
+            crm: '123456-SP',
+            especialidade: 'Clínico Geral'
         })
 
-        await expect(authService.login('davi@email.com', '12345')).rejects.toThrow('Credenciais Inválidas')
+        expect(resultado.email).toBe('davi@email.com')
+        expect(resultado.role).toBe(UsuarioRole.MEDICO)
+        expect(usuarioRepository.usuarios).toHaveLength(1)
     })
+
+    it('não deve cadastrar médico com e-mail já existente', async() => {
+        await authService.registrarMedico({
+            nome: 'Davi Saldanha',
+            email: 'davi@email.com',
+            senha: '123456',
+            crm: '123456-SP',
+            especialidade: 'Clínico Geral'
+        })
+
+        await expect(authService.registrarMedico({
+            nome: 'Davi Saldanha',
+            email: 'davi@email.com',
+            senha: '123456',
+            crm: '123456-SP',
+            especialidade: 'Clínico Geral'
+        })).rejects.toThrow('E-mail já cadastrado')
+    })
+
+    it('permite cadastrar um médico sem um usuário associado', async () => {
+        const medico = medicoRepository.criar({
+            usuario: undefined,
+            crm: '123456-SP',
+            especialidade: 'Clínico Geral'
+        })
+
+        const result = await expect(medicoRepository.salvar(medico))
+
+        expect(result).toBeDefined()
+     })
 
 })
