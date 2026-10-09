@@ -9,10 +9,12 @@ import swaggerUi from 'swagger-ui-express'
 import { errorHandler } from './middleware/errorHandler';
 import { requestLogger } from './middleware/requestLogger';
 import { logger } from './config/logger';
+import { criarCorsOptions } from './config/cors';
 
+const CORS_ORIGINS = process.env.CORS_ORIGINS?.split(',') || [];
 
 const app = express()
-app.use(cors())
+app.use(cors(criarCorsOptions(CORS_ORIGINS)))
 app.use(express.json())
 app.use(requestLogger)
 app.use(routes)
